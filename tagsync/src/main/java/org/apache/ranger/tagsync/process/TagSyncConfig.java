@@ -63,22 +63,30 @@ public class TagSyncConfig extends Configuration {
 
 	private static final String TAGSYNC_DEST_RANGER_PASSWORD_ALIAS = "tagadmin.user.password";
 	private static final String TAGSYNC_SOURCE_ATLASREST_PASSWORD_ALIAS = "atlas.user.password";
+	private static final String TAGSYNC_SOURCE_DATAHUB_TOKEN_ALIAS = "datahub.user.token";
 
 	private static final String TAGSYNC_TAGADMIN_USERNAME_PROP = "ranger.tagsync.dest.ranger.username";
 	private static final String TAGSYNC_ATLASREST_USERNAME_PROP = "ranger.tagsync.source.atlasrest.username";
+	private static final String TAGSYNC_DATAHUB_USERNAME_PROP = "ranger.tagsync.source.datahub.username";
 
 	private static final String TAGSYNC_TAGADMIN_PASSWORD_PROP = "ranger.tagsync.dest.ranger.password";
 	private static final String TAGSYNC_ATLASREST_PASSWORD_PROP = "ranger.tagsync.source.atlasrest.password";
+	private static final String TAGSYNC_DATAHUB_TOKEN_PROP = "ranger.tagsync.source.datahub.token";
 
 	private static final String TAGSYNC_TAGADMIN_CONNECTION_CHECK_INTERVAL_PROP = "ranger.tagsync.dest.ranger.connection.check.interval";
 
 	private static final String TAGSYNC_SOURCE_ATLAS_CUSTOM_RESOURCE_MAPPERS_PROP = "ranger.tagsync.atlas.custom.resource.mappers";
+	private static final String TAGSYNC_SOURCE_DATAHUB_CUSTOM_RESOURCE_MAPPERS_PROP = "ranger.tagsync.datahub.custom.resource.mappers";
+	private static final String TAGSYNC_SOURCE_DATAHUB_RANGER_SERVICE_MAPPING_PROP = "ranger.tagsync.datahub.ranger.service.mapping";
 
 	private static final String TAGSYNC_ATLASSOURCE_ENDPOINT_PROP = "ranger.tagsync.source.atlasrest.endpoint";
+	private static final String TAGSYNC_DATAHUB_ENDPOINT_PROP = "ranger.tagsync.source.datahub.endpoint";
 
 	private static final String TAGSYNC_ATLAS_REST_SOURCE_DOWNLOAD_INTERVAL_PROP = "ranger.tagsync.source.atlasrest.download.interval.millis";
+	private static final String TAGSYNC_DATAHUB_REST_SOURCE_DOWNLOAD_INTERVAL_PROP = "ranger.tagsync.source.datahub.download.interval.millis";
 
 	private static final String TAGSYNC_ATLAS_REST_SSL_CONFIG_FILE_PROP = "ranger.tagsync.source.atlasrest.ssl.config.filename";
+	private static final String TAGSYNC_DATAHUB_SSL_CONFIG_FILE_PROP = "ranger.tagsync.source.datahub.ssl.config.filename";
 
 	public static final String TAGSYNC_FILESOURCE_FILENAME_PROP = "ranger.tagsync.source.file.filename";
 
@@ -87,6 +95,7 @@ public class TagSyncConfig extends Configuration {
 	private static final String TAGSYNC_KEYSTORE_TYPE_PROP = "ranger.keystore.file.type";
 	private static final String TAGSYNC_TAGADMIN_KEYSTORE_PROP = "ranger.tagsync.keystore.filename";
 	private static final String TAGSYNC_ATLASREST_KEYSTORE_PROP = "ranger.tagsync.source.atlasrest.keystore.filename";
+	private static final String TAGSYNC_DATAHUB_KEYSTORE_PROP = "ranger.tagsync.source.datahub.keystore.filename";
 
 	private static final String TAGSYNC_SOURCE_RETRY_INITIALIZATION_INTERVAL_PROP = "ranger.tagsync.source.retry.initialization.interval.millis";
 
@@ -96,10 +105,14 @@ public class TagSyncConfig extends Configuration {
 	private static final String DEFAULT_TAGADMIN_USERNAME = "rangertagsync";
 	private static final String DEFAULT_ATLASREST_USERNAME = "admin";
 	private static final String DEFAULT_ATLASREST_PASSWORD = "admin";
+	private static final String DEFAULT_DATAHUB_USERNAME = "datahub";
+	private static final String DEFAULT_DATAHUB_PASSWORD = "datahub";
 
 	private static final int DEFAULT_TAGSYNC_TAGADMIN_CONNECTION_CHECK_INTERVAL = 15000;
 	private static final long DEFAULT_TAGSYNC_ATLASREST_SOURCE_DOWNLOAD_INTERVAL = 900000;
+	private static final long DEFAULT_TAGSYNC_DATAHUB_SOURCE_DOWNLOAD_INTERVAL = 900000;
 	public  static final int  DEFAULT_TAGSYNC_ATLASREST_SOURCE_ENTITIES_BATCH_SIZE = 10000;
+	public  static final int  DEFAULT_TAGSYNC_DATAHUB_SOURCE_ENTITIES_BATCH_SIZE = 10000;
 	private static final long DEFAULT_TAGSYNC_FILESOURCE_MOD_TIME_CHECK_INTERVAL = 60000;
 	private static final long DEFAULT_TAGSYNC_SOURCE_RETRY_INITIALIZATION_INTERVAL = 10000;
 
@@ -124,6 +137,7 @@ public class TagSyncConfig extends Configuration {
 	private static final String  TAGSYNC_SINK_MAX_BATCH_SIZE_PROP    = "ranger.tagsync.dest.ranger.max.batch.size";
 
 	private static final String TAGSYNC_ATLASREST_SOURCE_ENTITIES_BATCH_SIZE = "ranger.tagsync.source.atlasrest.entities.batch.size";
+	private static final String TAGSYNC_DATAHUB_SOURCE_ENTITIES_BATCH_SIZE = "ranger.tagsync.source.atlasrest.entities.batch.size";
 	public static final String TAGSYNC_SERVER_HA_ENABLED_PARAM = "ranger-tagsync.server.ha.enabled";
 
 	private Properties props;
@@ -286,6 +300,19 @@ public class TagSyncConfig extends Configuration {
 		return ret;
 	}
 
+	static public long getTagSourceDatahubDownloadIntervalInMillis(Properties prop) {
+		String val = prop.getProperty(TAGSYNC_DATAHUB_REST_SOURCE_DOWNLOAD_INTERVAL_PROP);
+		long ret = DEFAULT_TAGSYNC_DATAHUB_SOURCE_DOWNLOAD_INTERVAL;
+		if (StringUtils.isNotBlank(val)) {
+			try {
+				ret = Long.valueOf(val);
+			} catch (NumberFormatException exception) {
+				// Ignore
+			}
+		}
+		return ret;
+	}
+
 	static public String getTagSinkClassName(Properties prop) {
 		String val = prop.getProperty(TAGSYNC_SINK_CLASS_PROP);
 		if (StringUtils.equalsIgnoreCase(val, "ranger")) {
@@ -353,6 +380,12 @@ public class TagSyncConfig extends Configuration {
 		return prop.getProperty(TAGSYNC_ATLASSOURCE_ENDPOINT_PROP);
 	}
 
+	static public String getDatahubEndpoint(Properties prop) {
+		return prop.getProperty(TAGSYNC_DATAHUB_ENDPOINT_PROP);
+	}
+	static public String getDatahubToRangerServiceMap(Properties prop) {
+		return prop.getProperty(TAGSYNC_SOURCE_DATAHUB_RANGER_SERVICE_MAPPING_PROP);
+	}
 	static public String getAtlasRESTPassword(Properties prop) {
 		//update credential from keystore
 		String password = null;
@@ -382,6 +415,32 @@ public class TagSyncConfig extends Configuration {
 		}
 		return null;
 	}
+	static public String getDatahubToken(Properties prop) {
+		//update credential from keystore
+		String token = null;
+		if (prop != null && prop.containsKey(TAGSYNC_DATAHUB_TOKEN_PROP)) {
+			token = prop.getProperty(TAGSYNC_DATAHUB_TOKEN_PROP);
+			if (token != null && !token.isEmpty()) {
+				return token;
+			}
+		}
+		if (prop != null && prop.containsKey(TAGSYNC_DATAHUB_KEYSTORE_PROP)) {
+			String path = prop.getProperty(TAGSYNC_DATAHUB_KEYSTORE_PROP);
+			if (path != null) {
+				if (!path.trim().isEmpty()) {
+					try {
+						token = CredentialReader.getDecryptedString(path.trim(), TAGSYNC_SOURCE_DATAHUB_TOKEN_ALIAS, getTagsyncKeyStoreType(prop));
+					} catch (Exception ex) {
+						token = null;
+					}
+					if (token != null && !token.trim().isEmpty() && !token.trim().equalsIgnoreCase("none")) {
+						return token;
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 	static public String getAtlasRESTUserName(Properties prop) {
 		String userName=null;
@@ -394,14 +453,32 @@ public class TagSyncConfig extends Configuration {
 		return userName;
 	}
 
+	static public String getDatahubUserName(Properties prop) {
+		String userName=null;
+		if(prop!=null && prop.containsKey(TAGSYNC_DATAHUB_USERNAME_PROP)){
+			userName=prop.getProperty(TAGSYNC_DATAHUB_USERNAME_PROP);
+		}
+		if(StringUtils.isBlank(userName)){
+			userName=DEFAULT_DATAHUB_USERNAME;
+		}
+		return userName;
+	}
+
 	static public String getAtlasRESTSslConfigFile(Properties prop) {
 		return prop.getProperty(TAGSYNC_ATLAS_REST_SSL_CONFIG_FILE_PROP);
+	}
+
+	static public String getDatahubSslConfigFile(Properties prop) {
+		return prop.getProperty(TAGSYNC_DATAHUB_SSL_CONFIG_FILE_PROP);
 	}
 
 	static public String getCustomAtlasResourceMappers(Properties prop) {
 		return prop.getProperty(TAGSYNC_SOURCE_ATLAS_CUSTOM_RESOURCE_MAPPERS_PROP);
 	}
-	
+	static public String getCustomDatahubResourceMappers(Properties prop) {
+		return prop.getProperty(TAGSYNC_SOURCE_DATAHUB_CUSTOM_RESOURCE_MAPPERS_PROP);
+	}
+
 	static public String getAuthenticationType(Properties prop){
 		return prop.getProperty(AUTH_TYPE, "simple");
 	}
@@ -565,7 +642,19 @@ public class TagSyncConfig extends Configuration {
 				// Ignore
 			}
 		}
+		return ret;
+	}
+	static public int getDatahubSourceEntitiesBatchSize(Properties prop) {
+		String val = prop.getProperty(TAGSYNC_DATAHUB_SOURCE_ENTITIES_BATCH_SIZE);
+		int ret = DEFAULT_TAGSYNC_DATAHUB_SOURCE_ENTITIES_BATCH_SIZE;
 
+		if (StringUtils.isNotBlank(val)) {
+			try {
+				ret = Integer.valueOf(val);
+			} catch (NumberFormatException exception) {
+				// Ignore
+			}
+		}
 		return ret;
 	}
 }
