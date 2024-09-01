@@ -28,39 +28,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DatahubHiveResourceMapper extends DatahubResourceMapper {
-	public static final String DATASET_URN     = "hive_db";
-	public static final String ENTITY_TYPE_HIVE_TABLE  = "hive_table";
-	public static final String ENTITY_TYPE_HIVE_COLUMN = "hive_column";
+	// public static final String DATASET_URN     = "urn:li:dataset";
+	// public static final String ENTITY_TYPE_HIVE_TABLE  = "hive_table";
+	// public static final String ENTITY_TYPE_HIVE_COLUMN = "hive_column";
 
-	public static final String RANGER_TYPE_HIVE_DB     = "database";
-	public static final String RANGER_TYPE_HIVE_TABLE  = "table";
-	public static final String RANGER_TYPE_HIVE_COLUMN = "column";
-
-	public static final String[] SUPPORTED_ENTITY_TYPES = { ENTITY_TYPE_HIVE_DB, ENTITY_TYPE_HIVE_TABLE, ENTITY_TYPE_HIVE_COLUMN };
+	public static final String[] RANGER_TYPE_URI     = {"database", "table", "column"};
 
 	public DatahubHiveResourceMapper() {
-		super("hive", SUPPORTED_ENTITY_TYPES);
+		super("hive");
 	}
 
 	@Override
-	public RangerServiceResource buildResource(final RangerDatahubEntity entity) throws Exception {
-		String qualifiedName = (String)entity.getAttributes().get(AtlasResourceMapper.ENTITY_ATTRIBUTE_QUALIFIED_NAME);
-		if (StringUtils.isEmpty(qualifiedName)) {
-			throw new Exception("attribute '" +  ENTITY_ATTRIBUTE_QUALIFIED_NAME + "' not found in entity");
+	public RangerServiceResource buildResource(final DatahubEntity entity) throws Exception {
+		String platform = (String)entity.getPlatform();
+		if (StringUtils.isEmpty(platform)) {
+			throw new Exception("attribute 'platform' not found in entity");
 		}
 
-		String resourceStr = getResourceNameFromQualifiedName(qualifiedName);
-		if (StringUtils.isEmpty(resourceStr)) {
-			throwExceptionWithMessage("resource not found in attribute '" +  ENTITY_ATTRIBUTE_QUALIFIED_NAME + "': " + qualifiedName);
-		}
-
-		String clusterName = getClusterNameFromQualifiedName(qualifiedName);
-		if (StringUtils.isEmpty(clusterName)) {
-			throwExceptionWithMessage("cluster-name not found in attribute '" +  ENTITY_ATTRIBUTE_QUALIFIED_NAME + "': " + qualifiedName);
-		}
-
-		String   entityType  = entity.getTypeName();
-		String   entityGuid  = entity.getGuid();
+		String   entityType  = entity.ge;
 		String   serviceName = getRangerServiceName(clusterName);
 		String[] resources   = resourceStr.split(QUALIFIED_NAME_DELIMITER);
 		String   dbName      = resources.length > 0 ? resources[0] : null;
@@ -92,7 +77,7 @@ public class DatahubHiveResourceMapper extends DatahubResourceMapper {
 			throwExceptionWithMessage("invalid qualifiedName for entity-type '" + entityType + "': " + qualifiedName);
 		}
 
-		RangerServiceResource ret = new RangerServiceResource(entityGuid, serviceName, elements);
+		RangerServiceResource ret = new RangerServiceResource(serviceName, elements);
 
 		return ret;
 	}

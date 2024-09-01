@@ -210,28 +210,24 @@ public class DatahubTagSource extends AbstractTagSource implements Runnable {
                 tableResources.add(serviceTags);
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Time taken to convert datahub datasets to ranger entities: {} ms", System.currentTimeMillis() - startTime);
                 LOG.debug("Number of Ranger entities prepared: {}", tableResources.size());
             }
 
-            try {
-                for (ServiceTags tableResource : tableResources) {
-                    JsonNode node = mapper.valueToTree(tableResource);
-                    DatahubEntityUtils.removeNullNodes(node);
-                    String serviceTagsString = mapper.writeValueAsString(node);
+            for (ServiceTags tableResource : tableResources) {
+                JsonNode node = mapper.valueToTree(tableResource);
+                DatahubEntityUtils.removeNullNodes(node);
+                String serviceTagsString = mapper.writeValueAsString(node);
 
-					if (LOG.isDebugEnabled()) {
-						Gson gsonBuilder = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z")
-								.setPrettyPrinting()
-								.create();
-						LOG.debug("serviceTags=" + serviceTagsString);
-					}
-					updateSink(tableResource);
-				}
-			}
-		}
-
-	}
+                if (LOG.isDebugEnabled()) {
+                    Gson gsonBuilder = new GsonBuilder().setDateFormat("yyyyMMdd-HH:mm:ss.SSS-Z")
+                            .setPrettyPrinting()
+                            .create();
+                    LOG.debug("serviceTags=" + serviceTagsString);
+                }
+                updateSink(tableResource);
+            }
+        }
+    }
 
     private DatahubResponse getDatasetDetails() {
         String scrollId = null;

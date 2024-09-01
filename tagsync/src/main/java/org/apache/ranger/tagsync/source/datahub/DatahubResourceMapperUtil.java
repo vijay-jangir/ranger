@@ -48,25 +48,25 @@ public class DatahubResourceMapperUtil {
 		return ret;
 	}
 
-	public static RangerServiceResource getRangerServiceResource(RangerDatahubEntity datahubEntity) {
+	public static RangerServiceResource getRangerServiceResource(DatahubEntity datahubEntity) {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("==> getRangerServiceResource(" + datahubEntity.getGuid() +")");
+			LOG.debug("==> getRangerServiceResource(" + datahubEntity.getService() +")");
 		}
 
 		RangerServiceResource resource = null;
 
-		DatahubResourceMapper mapper = datahubResourceMappers.get(datahubEntity.getTypeName());
+		DatahubResourceMapper mapper = datahubResourceMappers.get(datahubEntity.getService());
 
 		if (mapper != null) {
 			try {
 				resource = mapper.buildResource(datahubEntity);
 			} catch (Exception exception) {
-				LOG.error("Could not get serviceResource for datahub entity:" + datahubEntity.getGuid() + ": ", exception);
+				LOG.error("Could not get serviceResource for datahub entity:" + datahubEntity.getPlatform() + ":" + datahubEntity.getService() + " :-> ", exception);
 			}
 		}
 
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("<== getRangerServiceResource(" + datahubEntity.getGuid() +"): resource=" + resource);
+			LOG.debug("<== getRangerServiceResource(" + datahubEntity.getService() +"): resource=" + resource);
 		}
 
 		return resource;
@@ -98,10 +98,6 @@ public class DatahubResourceMapperUtil {
 				DatahubResourceMapper resourceMapper = (DatahubResourceMapper) clazz.newInstance();
 
 				resourceMapper.initialize(properties);
-
-				for (String entityTypeName : resourceMapper.getSupportedEntityTypes()) {
-					add(entityTypeName, resourceMapper);
-				}
 
 			} catch (Exception exception) {
 				LOG.error("Failed to create DatahubResourceMapper:" + mapperName + ": ", exception);
